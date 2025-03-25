@@ -41,7 +41,7 @@ export default function App() {
   );
 }
 
-// 🔘 Toggle Button Component
+// Toggle Button Component
 function ToggleButton({ unit, onToggle }) {
   return (
     <TouchableOpacity onPress={onToggle} style={styles.toggleButton}>
@@ -52,7 +52,7 @@ function ToggleButton({ unit, onToggle }) {
   );
 }
 
-// 🌆 City Selector Component
+// City Selector Component
 function CitySelector({ selectedCity, onChange, cities }) {
   return (
     <View style={styles.selectorContainer}>
@@ -70,7 +70,7 @@ function CitySelector({ selectedCity, onChange, cities }) {
   );
 }
 
-// 🌤 Weather Card Component
+// Weather Card Component
 function WeatherCard({ weather, unit, convertTemp }) {
   return (
     <View style={styles.weatherCard}>
