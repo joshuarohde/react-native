@@ -4,63 +4,53 @@ import {
   Text,
   View,
   Image,
+  TextInput,
+  Button,
+  Switch,
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
   LayoutAnimation,
   Platform,
   UIManager,
+  Alert
 } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { MaterialIcons } from '@expo/vector-icons';
+import { ImageBackground } from 'react-native';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 export default function App() {
+  const [switchValue, setSwitchValue] = useState(false);
+  const [message, setMessage] = useState('');
+  const [expandedCards, setExpandedCards] = useState({});
+  const [dropdownStates, setDropdownStates] = useState({});
+  const [checkboxStates, setCheckboxStates] = useState({});
+
   const recipes = [
     {
       id: '1',
-      // https://www.thecookierookie.com/healthy-almond-milk-chicken-curry-recipe-dairy-free/
       title: 'Almond Milk Chicken Curry',
       author: 'Becky Hardin',
       image: require('./assets/chickencurry.jpg'),
-      quote:
-        '"This curry’s light, creamy, and packed with comfort. It’s got flavour without the fire, so even my kid loves it. After a long day, this one feels like home."',
+      quote: '“This curry’s light, creamy, and packed with comfort.”',
       time: { prep: '20 mins', cook: '20 mins', total: '40 mins', servings: '4' },
       ingredients: [
-        { type: 'title', label: 'For Curry Paste' },
+        { type: 'title', label: 'Curry Paste' },
         { type: 'item', label: '1 onion chopped' },
         { type: 'item', label: '2 cloves garlic' },
-        { type: 'item', label: '1 teaspoon ground ginger' },
-        { type: 'item', label: '1/2 teaspoon ground tumeric' },
-        { type: 'item', label: '1 teaspoon ground cardamom' },
-        { type: 'item', label: '1 teaspoon garam masala' },
-        { type: 'item', label: '11 teaspoon course sea salt' },
-
-
-        { type: 'title', label: 'For Almond Milk Chicken Curry' },
-        { type: 'item', label: '1 tablespoon olive oil divided' },
-        { type: 'item', label: '2 pounds chicken breast cut into 1 inch cubes' },
-        { type: 'item', label: 'Salt and pepper to taste' },
-        { type: 'item', label: 'Curry paste see recipe below' },
-        { type: 'item', label: '6 ounces tomato paste 1 small can' },
-        { type: 'item', label: '1.75 cups almondmilk' },
-        { type: 'item', label: '1/2 teaspoon ground cinnamon' },
-        { type: 'item', label: '1 teaspoon chili powder' },
-        { type: 'item', label: 'white rice for serving' },
-        { type: 'item', label: 'cilantro for serving optional' }
-
-
+        { type: 'title', label: 'Main Ingredients' },
+        { type: 'item', label: '2 chicken breasts' },
+        { type: 'item', label: '1 cup almond milk' },
       ],
-      instructions: ['Place the curry paste ingredients in a food processor and pulse until smooth and combined. Set aside.', 
-        'Heat 1/2 tablespoon olive oil in a large saucepan over high heat. Add the chicken and season with salt and pepper to taste. Cook for 3-5 minutes, stirring as you cook. Once golden, remove and set aside.', 
-        'Add remaining 1/2 tablespoon olive oil to the saucepan and add curry paste. Stir to combine. Cook for 2 minutes or until fragrant.', 
-        'Add the tomato paste, almond milk, ground cinnamon, and chili powder. Stir to combine.',
-        'Return the chicken to the saucepan and stir to coat.',
-        'Reduce heat to medium/low and cook for 30 minutes or until thickened and chicken is fully cooked.',
-        'Serve with white rice and top with cilantro. Enjoy!'
+      instructions: [
+        'Chop the onion and garlic.',
+        'Blend curry paste ingredients.',
+        'Cook chicken and add sauce.',
+        'Simmer and serve with rice.',
       ],
     },
     {
@@ -68,7 +58,8 @@ export default function App() {
       title: 'Renner Ranch Beans',
       author: 'Jeremy Renner',
       image: require('./assets/chickencurry.jpg'),
-      quote: '"A hearty dish for when you’ve had a heroic day. Easy to make. Hard to forget."',
+      quote: `“A hearty dish for a heroic day.”
+- Jeremy Renner`,
       time: { prep: '10 mins', cook: '30 mins', total: '40 mins', servings: '6' },
       ingredients: [
         { type: 'title', label: 'Beans Section' },
@@ -78,13 +69,25 @@ export default function App() {
         { type: 'item', label: 'BBQ sauce' },
         { type: 'item', label: 'Salt, pepper, paprika' }
       ],
-      instructions: ['Sauté onions', 'Add beans and sauce', 'Simmer for 30 minutes', 'Serve hot'],
+      instructions: [
+        'Sauté onions',
+        'Add beans and sauce',
+        'Simmer for 30 minutes',
+        'Serve hot',
+      ],
     },
   ];
 
-  const [expandedCards, setExpandedCards] = useState({});
-  const [dropdownStates, setDropdownStates] = useState({});
-  const [checkboxStates, setCheckboxStates] = useState({});
+  const toggleSwitch = () => setSwitchValue(previous => !previous);
+
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      Alert.alert('Message sent', 'Thanks for telling Jeremy what you think!');
+      setMessage('');
+    } else {
+      Alert.alert('Empty message', 'Please type something before sending.');
+    }
+  };
 
   const toggleCard = (cardId) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -121,21 +124,19 @@ export default function App() {
   const renderListItem = (item, index, cardId, type) => {
     if (item.type === 'title') {
       return (
-        <Text style={styles.subSectionTitle} key={index}>{item.label}</Text>
+        <TouchableWithoutFeedback key={index} onPress={() => toggleDropdown(cardId, type)}>
+          <Text style={styles.subSectionTitle}>{item.label}</Text>
+        </TouchableWithoutFeedback>
       );
     }
-  
+
     const checked = checkboxStates?.[cardId]?.[type]?.[index];
-  
     return (
-      <TouchableWithoutFeedback
-        key={index}
-        onPress={() => toggleDropdown(cardId, type)} // tap anywhere else = close
-      >
+      <TouchableWithoutFeedback key={index} onPress={() => toggleDropdown(cardId, type)}>
         <View style={styles.listItem}>
           <TouchableOpacity
             onPress={(e) => {
-              e.stopPropagation(); // prevent closing if checkbox tapped
+              e.stopPropagation();
               toggleCheckbox(cardId, type, index);
             }}
           >
@@ -145,21 +146,21 @@ export default function App() {
               color={checked ? 'green' : '#aaa'}
             />
           </TouchableOpacity>
-          <Text style={[styles.itemText, checked && { opacity: 0.6 }]}>
-            {item.label}
-          </Text>
+          <Text style={[styles.itemText, checked && { opacity: 0.6 }]}>{item.label}</Text>
         </View>
       </TouchableWithoutFeedback>
     );
   };
-  
 
-  return (
-    <ScrollView style={styles.body}>
+  const appContent = (
+    <ScrollView contentContainerStyle={styles.body}>
       <View style={styles.container}>
         <Text style={styles.title}>Jeremy Renner Food App</Text>
       </View>
-
+<View style={styles.darkModeCard}>
+          <Text style={styles.darkModeTitle}>Enable Jeremy Mode</Text>
+          <Switch value={switchValue} onValueChange={toggleSwitch} />
+        </View>
       {recipes.map((recipe) => (
         <TouchableWithoutFeedback key={recipe.id} onPress={() => toggleCard(recipe.id)}>
           <View style={styles.recipeCard}>
@@ -169,7 +170,6 @@ export default function App() {
                 <Text style={styles.recipeTitle}>{recipe.title}</Text>
                 <Text style={styles.creator}>by {recipe.author}</Text>
                 <Text style={styles.descriptions}>{recipe.quote}</Text>
-                <Text style={styles.jeremy}>- Jeremy Renner</Text>
               </View>
             </View>
 
@@ -209,42 +209,75 @@ export default function App() {
                 </TouchableWithoutFeedback>
                 {dropdownStates?.[recipe.id]?.instructions &&
                   recipe.instructions.map((item, index) =>
-                    renderListItem(
-                      { type: 'item', label: item },
-                      index,
-                      recipe.id,
-                      'instructions'
-                    )
+                    renderListItem({ type: 'item', label: item }, index, recipe.id, 'instructions')
                   )}
               </>
             )}
           </View>
         </TouchableWithoutFeedback>
       ))}
+
+      <View style={styles.rennerMessageBox}>
+        <Text style={styles.rennerTitle}>Tell Jeremy Renner What You Think Of The Food!</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Type your message..."
+          value={message}
+          onChangeText={setMessage}
+          multiline
+        />
+        <Button title="Send Message" onPress={handleSendMessage} />
+      </View>
     </ScrollView>
+  );
+
+  return switchValue ? (
+    <ImageBackground
+      source={require('./assets/jeremy.jpg')}
+      style={styles.backgroundImage}
+      resizeMode="repeat"
+    >
+      {appContent}
+    </ImageBackground>
+  ) : (
+    appContent
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
   container: {
     alignItems: 'center',
     margin: 24,
+    backgroundColor: '#fff',
+    marginTop: 60,
   },
   body: {
-    flex: 1,
-    backgroundColor: '#f2f2f2',
+    flexGrow: 1,
+    paddingBottom: 40,
     paddingHorizontal: 16,
   },
   title: {
-    fontSize: RFValue(20),
+    fontSize: RFValue(18),
     fontWeight: 'bold',
+    
+  },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginBottom: 16,
+  },
+  switchLabel: {
+    fontSize: 14,
   },
   recipeCard: {
-    flexDirection: 'column',
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 12,
-    marginBottom: 20,
+    margin: 16,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -252,7 +285,7 @@ const styles = StyleSheet.create({
   },
   topRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 10,
   },
   imgs: {
     width: 80,
@@ -261,32 +294,25 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   recipeTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
   },
   creator: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#555',
-    opacity: 0.7,
-    paddingBottom: 5,
+    marginBottom: 4,
   },
   descriptions: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#555',
-  },
-  jeremy: {
-    fontSize: 14,
-    color: '#555',
-    fontWeight: '500',
   },
   timeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
     borderTopWidth: 1,
     borderTopColor: '#eee',
     paddingTop: 10,
+    marginTop: 10,
   },
   timeText: {
     fontSize: 12,
@@ -297,31 +323,77 @@ const styles = StyleSheet.create({
   dropdownHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
     marginTop: 10,
   },
   dropdownTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
     color: '#333',
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   itemText: {
-    fontSize: 14,
+    fontSize: 13,
     marginLeft: 10,
-    marginRight: 20,
     color: '#333',
   },
   subSectionTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#444',
-    marginTop: 10,
+    marginTop: 8,
   },
+  rennerMessageBox: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginVertical: 20,
+    marginHorizontal: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  rennerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  input: {
+    height: 80,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    textAlignVertical: 'top',
+    fontSize: 14,
+    backgroundColor: '#f9f9f9',
+  },
+  darkModeCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginVertical: 10,
+    marginHorizontal: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  darkModeTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },  
 });
