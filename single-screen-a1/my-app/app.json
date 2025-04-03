@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "Jeremy Renner Food App",
+    "slug": "jeremy-renner-food",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/jeremy-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -17,12 +17,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/jeremy-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/jeremy.png"
     }
   }
 }
