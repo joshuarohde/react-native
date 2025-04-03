@@ -222,12 +222,11 @@ export default function App() {
     <ScrollView contentContainerStyle={styles.body}>
       <View style={styles.container}>
         <Text style={styles.title}>Jeremy Renner Food App</Text>
-        <View style={styles.darkModeCard}>
+      </View>
+ <View style={styles.darkModeCard}>
           <Text style={styles.darkModeTitle}>Enable Jeremy Mode</Text>
           <Switch value={switchValue} onValueChange={toggleSwitch} />
         </View>
-      </View>
-
       {recipes.map((recipe) => (
         <TouchableWithoutFeedback key={recipe.id} onPress={() => toggleCard(recipe.id)}>
           <View style={styles.recipeCard}>
