@@ -5,10 +5,22 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Home screen</Text>
-      <Link href="/about" style={styles.button}>
-        Go to About screen
+ {/* Pass a parameter using a query string */}
+ <Link href="/about?special=react" style={styles.button}>
+        Go to About (Method 1)
       </Link>
-</View>
+
+      {/* Pass a parameter using an object */}
+      <Link
+        href={{
+          pathname: "/about",
+          params: { special: "expo" },
+        }}
+        style={styles.button}
+      >
+        Go to About (Method 2)
+      </Link>
+    </View>
   );
 }
 

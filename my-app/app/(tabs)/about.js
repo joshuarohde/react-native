@@ -1,21 +1,14 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { View, Text } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 
 export default function AboutScreen() {
+  // Get URL parameters
+  const params = useLocalSearchParams();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>About screen</Text>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>About Screen</Text>
+      <Text>Special Parameter: {params.special}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-});
