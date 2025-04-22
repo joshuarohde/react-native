@@ -1,10 +1,18 @@
-import { Stack } from 'expo-router';
+import { Stack, useSegments } from 'expo-router';
 
 export default function ContentLayout() {
+  const segments = useSegments();
+
+  const isVideoScreen = segments[2] === 'video'; // Assuming segments: ['(tabs)', '2-content', 'video']
+
   return (
     <Stack
       screenOptions={{
-        headerShown: false, // Make sure it's OFF here too
+        headerShown: false,
+        tabBarStyle: {
+          display: 'flex',
+        },
+        tabBarActiveTintColor: isVideoScreen ? 'transparent' : undefined,
       }}
     />
   );

@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { View, StatusBar, StyleSheet } from 'react-native';
 import { DarkModeProvider, DarkModeContext } from '../components/DarkModeContext';
+import { UserNameProvider } from '../components/UserNameContext';
 import { useContext } from 'react';
 
 function LayoutWrapper() {
@@ -20,7 +21,9 @@ function LayoutWrapper() {
 export default function RootLayout() {
   return (
     <DarkModeProvider>
-      <LayoutWrapper />
+      <UserNameProvider>
+        <LayoutWrapper />
+      </UserNameProvider>
     </DarkModeProvider>
   );
 }

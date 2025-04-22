@@ -1,11 +1,15 @@
-// app/(tabs)/_layout.js
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContext } from 'react';
-import { DarkModeContext } from '../../components/DarkModeContext';
+import { DarkModeContext, DarkModeProvider } from '../../components/DarkModeContext';
+import { UserNameProvider } from '../../components/UserNameContext';
+import { useSegments } from 'expo-router';
 
-export default function TabsLayout() {
+function TabsWithDarkMode() {
   const { darkMode } = useContext(DarkModeContext);
+  const segments = useSegments();
+
+  const isInVideo = segments.includes('video');
 
   return (
     <Tabs
@@ -15,8 +19,10 @@ export default function TabsLayout() {
           backgroundColor: darkMode ? '#121212' : '#ffffff',
           borderTopColor: darkMode ? '#222' : '#ccc',
         },
-        tabBarActiveTintColor: darkMode ? '#ffffff' : '#000000',
-        tabBarInactiveTintColor: darkMode ? '#888888' : '#888888',
+        // Unselect tab if viewing the video screen
+        tabBarActiveTintColor: isInVideo && route.name === '2-content' ? 'transparent' :
+                              darkMode ? '#ffffff' : '#000000',
+        tabBarInactiveTintColor: '#888888',
         tabBarIcon: ({ color, size }) => {
           let iconName;
           if (route.name === '1-home') iconName = 'home';
@@ -25,6 +31,28 @@ export default function TabsLayout() {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
-    />
+    >
+      <Tabs.Screen name="1-home" options={{ title: 'Home' }} />
+
+      <Tabs.Screen
+        name="2-content"
+        options={{
+          title: 'Content',
+          href: '/(tabs)/2-content', // always reset to index when clicked
+        }}
+      />
+
+      <Tabs.Screen name="3-settings" options={{ title: 'Settings' }} />
+    </Tabs>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <DarkModeProvider>
+      <UserNameProvider>
+        <TabsWithDarkMode />
+      </UserNameProvider>
+    </DarkModeProvider>
   );
 }

@@ -1,26 +1,19 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TextInput, Switch, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DarkModeContext } from '../../../components/DarkModeContext';
+import { UserNameContext } from '../../../components/UserNameContext';
 
 function SettingsScreen() {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
-  const [userName, setUserName] = useState('');
-
-  useEffect(() => {
-    const loadData = async () => {
-      const name = await AsyncStorage.getItem('userName');
-      if (name) setUserName(name);
-    };
-    loadData();
-  }, []);
+  const { userName, updateUserName } = useContext(UserNameContext); // ✅ use updateUserName instead of setUserName
 
   return (
     <ScrollView
       style={[darkMode && styles.darkContainer]}
       contentContainerStyle={[styles.container, darkMode && styles.darkContainer]}
     >
-      <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde creations +</Text>
+      <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde Creations +</Text>
       <Text style={[styles.header, darkMode && styles.darkText]}>Settings</Text>
 
       <Text style={[styles.label, darkMode && styles.darkText]}>Name</Text>
@@ -29,10 +22,7 @@ function SettingsScreen() {
         placeholder="Your name"
         placeholderTextColor={darkMode ? '#ccc' : '#888'}
         value={userName}
-        onChangeText={text => {
-          setUserName(text);
-          AsyncStorage.setItem('userName', text);
-        }}
+        onChangeText={text => updateUserName(text)} // ✅ Save and update context in real-time
       />
 
       <Text style={[styles.label, darkMode && styles.darkText]}>Dark Mode</Text>
