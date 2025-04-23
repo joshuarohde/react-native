@@ -1,44 +1,61 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { DarkModeContext } from '../../../components/DarkModeContext';
+import { FavouriteContext } from '../../../components/FavouriteContext';
+import videos from '../../../components/VideoStorage';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function ContentScreen() {
   const { darkMode } = useContext(DarkModeContext);
+  const { favourites, toggleFavourite } = useContext(FavouriteContext);
+  const router = useRouter();
 
   return (
     <ScrollView
       style={[styles.container, darkMode && styles.darkContainer]}
       contentContainerStyle={{ paddingBottom: 80 }}
     >
-      <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde creations +</Text>
-      <Text style={[styles.header, darkMode && styles.darkText]}>Project Collections</Text>
-  
-      {[0, 1, 2, 3].map((_, rowIdx) => (
-        <View key={`collection-row-${rowIdx}`} style={styles.row}>
-          {[0, 1].map((_, colIdx) => (
-            <View
-              key={`collection-btn-${rowIdx}-${colIdx}`}
-              style={[styles.collectionButton, darkMode && styles.darkButton]}
-            >
-              <Text style={[styles.buttonText, darkMode && styles.darkText]}>Project Name</Text>
-            </View>
-          ))}
-        </View>
-      ))}
-  
+      <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde Creations +</Text>
       <Text style={[styles.header, darkMode && styles.darkText]}>All Videos</Text>
-  
+
       <View style={styles.projectRow}>
-        {[0, 1, 2, 3, 4, 5].map((_, index) => (
-          <View key={`project-${index}`} style={styles.projectCard}>
-            <View style={styles.projectImage} />
-            <Text style={[styles.projectTitle, darkMode && styles.darkText]}>Project Name</Text>
-          </View>
+        {videos.map((video) => (
+          <TouchableOpacity
+            key={video.id}
+            onPress={() =>
+              router.push({
+                pathname: '../../video',
+                params: {
+                  title: video.title,
+                  videoId: video.id,
+                  description: video.description,
+                },
+              })
+            }
+            style={styles.projectCard}
+          ><View style={styles.imageWrapper}>
+            <Image source={{ uri: video.thumbnail }} style={styles.projectImage} resizeMode="cover"/>
+            </View>
+            <View style={styles.titleRow}>
+              <Text style={[styles.projectTitle, darkMode && styles.darkText]}>
+                {video.title}
+              </Text>
+              <TouchableOpacity onPress={() => toggleFavourite(video.id)}>
+                <AntDesign
+                  name={favourites.includes(video.id) ? 'heart' : 'hearto'}
+                  size={14}
+                  color={favourites.includes(video.id) ? 'red' : 'gray'}
+                  style={{ marginLeft: 6, marginTop: 4.5 }}
+                />
+                
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>
   );
-  
 }
 
 const styles = StyleSheet.create({
@@ -59,41 +76,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginVertical: 10,
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    gap: 10,
-  },
-  collectionButton: {
-    flex: 1,
-    backgroundColor: '#eee',
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  darkButton: {
-    backgroundColor: '#333',
-  },
-  buttonText: {
-    fontSize: 14,
-    color: '#000',
-  },
-  videoCard: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    padding: 10,
-  },
-  videoThumbnail: {
-    backgroundColor: '#ccc',
-    height: 100,
-    borderRadius: 8,
-  },
-  videoTitle: {
-    marginTop: 8,
-    fontSize: 14,
-  },
   darkText: {
     color: '#fff',
   },
@@ -103,25 +85,34 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
   },
-  
   projectCard: {
     width: '48%',
     marginBottom: 16,
-    alignItems: 'center',
   },
-  
-  projectImage: {
+  imageWrapper: {
     width: '100%',
-    aspectRatio: 1,
-    backgroundColor: '#ccc',
+    aspectRatio: 1, // Square thumbnail
     borderRadius: 10,
+    overflow: 'hidden', // This is important — clips the overflow
+    backgroundColor: '#ccc',
   },
-  
-  projectTitle: {
+  projectImage: {
+    width: '140%', // intentionally oversize width
+    height: '140%', // intentionally oversize height
+    position: 'absolute',
+    top: '-20%', // push up
+    left: '-18%', // push left
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     marginTop: 4,
+    alignSelf: 'stretch',
+  },
+  projectTitle: {
     fontWeight: '600',
     fontSize: 14,
-    textAlign: 'center',
+    flexShrink: 1,
   },
-  
 });

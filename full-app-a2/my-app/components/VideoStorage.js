@@ -1,21 +1,28 @@
-// components/VideoStorage.js
-
 const videos = [
   {
-    id: '1',
+    id: '6Sfb-WU0Ir8',
     title: 'Joshua V Palmer',
-    videoId: '6Sfb-WU0Ir8',
     description: 'Meet Joshua V Palmer and learn about RC+.',
+    credits: ['Directed by Joshua Rohde', 'Edited by RC+ Team'],
+    directorNote: 'This project represents the beginning of something special. Thanks for watching!',
     thumbnail: 'https://img.youtube.com/vi/6Sfb-WU0Ir8/hqdefault.jpg',
   },
-  // You can add more videos like this:
-  // {
-  //   id: '2',
-  //   title: 'Another Video Title',
-  //   videoId: 'YouTubeVideoIDHere',
-  //   description: 'This is a description.',
-  //   thumbnail: 'https://img.youtube.com/vi/YouTubeVideoIDHere/hqdefault.jpg',
-  // },
+  {
+    id: '-gNMU2gZ_iE',
+    title: 'Interactive Interview',
+    description: 'A short interactive film about a funeral home interview.',
+    credits: ['Directed by Joshua Rohde', 'Edited by RC+ Team'],
+    directorNote: 'This project represents the beginning of something special. Thanks for watching!',
+    thumbnail: 'https://img.youtube.com/vi/-gNMU2gZ_iE/hqdefault.jpg',
+  },
+  {
+    id: 'bUWVfUbXwlY',
+    title: 'A For Anniversary',
+    description: 'A heartfelt story about time and connection.',
+    credits: ['Directed by Joshua Rohde', 'Edited by RC+ Team'],
+    directorNote: 'This project represents the beginning of something special. Thanks for watching!',
+    thumbnail: 'https://img.youtube.com/vi/bUWVfUbXwlY/hqdefault.jpg',
+  },
 ];
 
 export default videos;
