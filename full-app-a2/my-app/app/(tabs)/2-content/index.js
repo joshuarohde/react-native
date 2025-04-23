@@ -17,6 +17,26 @@ export default function ContentScreen() {
       contentContainerStyle={{ paddingBottom: 80 }}
     >
       <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde Creations +</Text>
+      <Text style={[styles.header, darkMode && styles.darkText]}>Project Collections</Text>
+<View style={styles.row}>
+  {["Project P 1", "Project P 2", "Project P 3", "Project P 4"].map((name, index) => (
+    <TouchableOpacity
+      key={index}
+      style={[styles.collectionButton, darkMode && styles.darkButton]}
+      onPress={() => router.push(`/project?name=${name}`)}
+    >
+      <Image
+        source={{ uri: videos[0].thumbnail }}
+        style={styles.collectionBackground}
+        resizeMode="cover"
+      />
+      <View style={styles.collectionOverlay}>
+        <Text style={[styles.buttonText, darkMode && styles.darkText]}>{name}</Text>
+      </View>
+    </TouchableOpacity>
+  ))}
+</View>
+
       <Text style={[styles.header, darkMode && styles.darkText]}>All Videos</Text>
 
       <View style={styles.projectRow}>
@@ -115,4 +135,43 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flexShrink: 1,
   },
+  collectionButton: {
+    width: '48%',              
+    height: '20%',                
+    marginBottom: 10,
+    borderRadius: 5,
+    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  collectionBackground: {
+    ...StyleSheet.absoluteFillObject,
+    width: '200%',
+    height: '100%',
+    opacity: 0.5, // faded look
+    position: 'absolute',
+  },
+  
+  collectionOverlay: {
+    zIndex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '50%',
+  },
+  
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000',
+  },
+  
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 2,
+  },  
 });
