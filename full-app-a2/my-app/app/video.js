@@ -4,10 +4,12 @@ import { useLocalSearchParams, Stack } from 'expo-router';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { Ionicons } from '@expo/vector-icons';
 import { FavouriteContext } from '../components/FavouriteContext';
+import { DarkModeContext } from '../components/DarkModeContext';
 
 export default function VideoScreen() {
   const { videoId, title, description } = useLocalSearchParams();
   const { favourites, toggleFavourite } = useContext(FavouriteContext);
+  const { darkMode } = useContext(DarkModeContext);
 
   const isFavourited = favourites.includes(videoId);
 
@@ -22,20 +24,30 @@ export default function VideoScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerTitle: '',
-          headerRight: () => (
-            <Text style={{ fontWeight: 'bold', fontSize: 16, marginRight: 10 }}>
-              Rohde Creations +
-            </Text>
-          ),
-        }}
-      />
-      <ScrollView contentContainerStyle={styles.container}>
+<Stack.Screen
+  options={{
+    headerShown: true,
+    headerTitle: '',
+    headerStyle: {
+      backgroundColor: darkMode ? '#121212' : '#fff',
+    },
+    headerTintColor: darkMode ? '#fff' : '#000', 
+    headerRight: () => (
+      <Text style={{
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginRight: 10,
+        color: darkMode ? '#ff4c4c' : '#000', // Red in dark mode, black in light
+      }}>
+        Rohde Creations +
+      </Text>
+    ),
+  }}
+/>
+
+      <ScrollView style={[styles.container, darkMode && styles.darkContainer]}>
         <View style={styles.titleRow}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, darkMode && styles.darkText]}>{title}</Text>
           <TouchableOpacity onPress={() => toggleFavourite(videoId)}>
             <Ionicons
               name={isFavourited ? 'heart' : 'heart-outline'}
@@ -58,19 +70,21 @@ export default function VideoScreen() {
           </View>
         </View>
 
-        <Text style={styles.descriptionLabel}>Description</Text>
-        <Text style={styles.descriptionBox}>{description}</Text>
+        <Text style={[styles.descriptionLabel, darkMode && styles.darkText]}>Description</Text>
+        <Text style={[styles.descriptionBox, darkMode && styles.darkBox, darkMode && styles.darkText]}>
+          {description}
+        </Text>
 
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Credits</Text>
+          <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>Credits</Text>
           {credits.map((credit, index) => (
-            <Text key={index} style={styles.sectionText}>{credit}</Text>
+            <Text key={index} style={[styles.sectionText, darkMode && styles.darkText]}>{credit}</Text>
           ))}
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Director's Note</Text>
-          <Text style={styles.sectionText}>{directorNote}</Text>
+          <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>Director's Note</Text>
+          <Text style={[styles.sectionText, darkMode && styles.darkText]}>{directorNote}</Text>
         </View>
       </ScrollView>
     </>
@@ -81,6 +95,16 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: '#fff',
+  },
+  darkContainer: {
+    backgroundColor: '#121212',
+  },
+  darkText: {
+    color: '#fff',
+  },
+  darkBox: {
+    backgroundColor: '#1e1e1e',
+    borderColor: '#333',
   },
   titleRow: {
     flexDirection: 'row',

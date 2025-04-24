@@ -5,7 +5,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { DarkModeContext } from '../../../components/DarkModeContext';
 import { UserNameContext } from '../../../components/UserNameContext';
 import { FavouriteContext } from '../../../components/FavouriteContext';
-import videos from '../../../components/VideoStorage';
+import { homeVideoLayout } from '../../../components/HomeVideoStorage';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -13,6 +13,9 @@ export default function HomeScreen() {
   const { darkMode } = useContext(DarkModeContext);
   const { userName } = useContext(UserNameContext);
   const { favourites, toggleFavourite } = useContext(FavouriteContext);
+
+  const mainVideo = homeVideoLayout.main;
+  const featuredVideos = homeVideoLayout.featured;
 
   const handlePress = (video) => {
     router.push({
@@ -30,81 +33,65 @@ export default function HomeScreen() {
       <Text style={[styles.title, darkMode && styles.darkText]}>
         Welcome {userName?.trim() || 'Stranger'} to
       </Text>
-      <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde Creations +</Text>
+      <Text style={[styles.brand, { color: darkMode ? '#ff4c4c' : '#000' }]}>
+        Rohde Creations +
+      </Text>
 
       <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>New to RC+</Text>
 
-{/* FIRST VIDEO FULL WIDTH */}
-<View style={{ marginBottom: 16 }}>
-  <TouchableOpacity
-    key={videos[0].id}
-    onPress={() =>
-      router.push({
-        pathname: '../../video',
-        params: {
-          title: videos[0].title,
-          videoId: videos[0].id,
-          description: videos[0].description,
-        },
-      })
-    }
-    style={styles.projectCard}
-  >
-<Image source={{ uri: videos[0].thumbnail }} style={styles.wideImage} />
-
-    <View style={styles.titleRow}>
-      <Text style={[styles.projectTitle, styles.leftAlignedText, darkMode && styles.darkText]}>
-        {videos[0].title}
-      </Text>
-      <TouchableOpacity onPress={() => toggleFavourite(videos[0].id)}>
-        <AntDesign
-          name={favourites.includes(videos[0].id) ? 'heart' : 'hearto'}
-          size={14}
-          color={favourites.includes(videos[0].id) ? 'red' : 'gray'}
-          style={{ marginLeft: 6, marginTop: 4.5 }}
-        />
-      </TouchableOpacity>
-    </View>
-  </TouchableOpacity>
-</View>
-
-{/* NEXT TWO SIDE-BY-SIDE */}
-<View style={styles.projectRow}>
-  {videos.slice(1).map((video) => (
-    <TouchableOpacity
-      key={video.id}
-      onPress={() =>
-        router.push({
-          pathname: '../../video',
-          params: {
-            title: video.title,
-            videoId: video.id,
-            description: video.description,
-          },
-        })
-      }
-      style={styles.squareCard}
-    ><View style={styles.imageWrapper}>
-      <Image source={{ uri: video.thumbnail }} style={styles.squareImage}  resizeMode="cover"/>
-      </View>
-      <View style={styles.titleRow}>
-        <Text style={[styles.projectTitle, darkMode && styles.darkText]}>
-          {video.title}
-        </Text>
-        <TouchableOpacity onPress={() => toggleFavourite(video.id)}>
-          <AntDesign
-            name={favourites.includes(video.id) ? 'heart' : 'hearto'}
-            size={14}
-            color={favourites.includes(video.id) ? 'red' : 'gray'}
-            style={{ marginLeft: 6, marginTop: 4.5 }}
-          />
+      {/* MAIN FEATURED VIDEO */}
+      <View style={{ marginBottom: 16 }}>
+        <TouchableOpacity
+          key={mainVideo.id}
+          onPress={() => handlePress(mainVideo)}
+          style={styles.projectCard}
+        >
+          <Image source={{ uri: mainVideo.thumbnail }} style={styles.wideImage} />
+          <View style={styles.titleRow}>
+            <Text style={[styles.projectTitle, styles.leftAlignedText, darkMode && styles.darkText]}>
+              {mainVideo.title}
+            </Text>
+            <TouchableOpacity onPress={() => toggleFavourite(mainVideo.id)}>
+              <AntDesign
+                name={favourites.includes(mainVideo.id) ? 'heart' : 'hearto'}
+                size={14}
+                color={favourites.includes(mainVideo.id) ? 'red' : 'gray'}
+                style={{ marginLeft: 6, marginTop: 4.5 }}
+              />
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       </View>
-    </TouchableOpacity>
-  ))}
-</View>
 
-      {/* Optional Static Projects */}
+      {/* FEATURED GRID */}
+      <View style={styles.projectRow}>
+        {featuredVideos.map((video) => (
+          <TouchableOpacity
+            key={video.id}
+            onPress={() => handlePress(video)}
+            style={styles.squareCard}
+          >
+            <View style={styles.imageWrapper}>
+              <Image source={{ uri: video.thumbnail }} style={styles.squareImage} resizeMode="cover" />
+            </View>
+            <View style={styles.titleRow}>
+              <Text style={[styles.projectTitle, darkMode && styles.darkText]}>
+                {video.title}
+              </Text>
+              <TouchableOpacity onPress={() => toggleFavourite(video.id)}>
+                <AntDesign
+                  name={favourites.includes(video.id) ? 'heart' : 'hearto'}
+                  size={14}
+                  color={favourites.includes(video.id) ? 'red' : 'gray'}
+                  style={{ marginLeft: 6, marginTop: 4.5 }}
+                />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Announcements */}
       <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>Announcements</Text>
       <View style={[styles.announcementCard, darkMode && styles.darkCard]}>
         <Text style={[styles.announcementText, darkMode && styles.darkText]}>
@@ -159,22 +146,20 @@ const styles = StyleSheet.create({
     width: '48%',
     marginBottom: 12,
   },
-   imageWrapper: {
+  imageWrapper: {
     width: '100%',
-    aspectRatio: 1, // Square thumbnail
+    aspectRatio: 1,
     borderRadius: 10,
-    overflow: 'hidden', // This is important — clips the overflow
+    overflow: 'hidden',
     backgroundColor: '#ccc',
   },
   squareImage: {
-    width: '140%', // intentionally oversize width
-    height: '140%', // intentionally oversize height
+    width: '140%',
+    height: '140%',
     position: 'absolute',
-    top: '-20%', // push up
-    left: '-18%', // push left
+    top: '-20%',
+    left: '-18%',
   },
- 
-  
   projectTitle: {
     fontWeight: '600',
   },
@@ -208,7 +193,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 10, // optional for spacing
+    gap: 10,
   },
-  
 });

@@ -13,7 +13,10 @@ function SettingsScreen() {
       style={[darkMode && styles.darkContainer]}
       contentContainerStyle={[styles.container, darkMode && styles.darkContainer]}
     >
-      <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde Creations +</Text>
+ <Text style={[styles.brand, { color: darkMode ? '#ff4c4c' : '#000' }]}>
+  Rohde Creations +
+</Text>
+
       <Text style={[styles.header, darkMode && styles.darkText]}>Settings</Text>
 
       <Text style={[styles.label, darkMode && styles.darkText]}>Name</Text>

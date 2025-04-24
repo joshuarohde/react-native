@@ -1,9 +1,13 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import {
+  View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import { DarkModeContext } from '../../../components/DarkModeContext';
 import { FavouriteContext } from '../../../components/FavouriteContext';
 import videos from '../../../components/VideoStorage';
+import { collections } from '../../../components/CollectionStorage';
 import { AntDesign } from '@expo/vector-icons';
 
 export default function ContentScreen() {
@@ -11,36 +15,78 @@ export default function ContentScreen() {
   const { favourites, toggleFavourite } = useContext(FavouriteContext);
   const router = useRouter();
 
+  const [sortOption, setSortOption] = useState('default');
+
+  const getSortedVideos = () => {
+    let sorted = [...videos];
+    switch (sortOption) {
+      case 'a-z':
+        return sorted.sort((a, b) => a.title.localeCompare(b.title));
+      case 'z-a':
+        return sorted.sort((a, b) => b.title.localeCompare(a.title));
+      case 'oldest':
+        return sorted;
+      case 'newest':
+        return sorted.reverse();
+      case 'liked':
+        return sorted.filter((v) => favourites.includes(v.id));
+      default:
+        return sorted;
+    }
+  };
+
+  const sortedVideos = getSortedVideos();
+
   return (
     <ScrollView
       style={[styles.container, darkMode && styles.darkContainer]}
       contentContainerStyle={{ paddingBottom: 80 }}
     >
-      <Text style={[styles.brand, darkMode && styles.darkText]}>Rohde Creations +</Text>
+      <Text style={[styles.brand, { color: darkMode ? '#ff4c4c' : '#000' }]}>Rohde Creations +</Text>
       <Text style={[styles.header, darkMode && styles.darkText]}>Project Collections</Text>
-<View style={styles.row}>
-  {["Project P 1", "Project P 2", "Project P 3", "Project P 4"].map((name, index) => (
-    <TouchableOpacity
-      key={index}
-      style={[styles.collectionButton, darkMode && styles.darkButton]}
-      onPress={() => router.push(`/project?name=${name}`)}
-    >
-      <Image
-        source={{ uri: videos[0].thumbnail }}
-        style={styles.collectionBackground}
-        resizeMode="cover"
-      />
-      <View style={styles.collectionOverlay}>
-        <Text style={[styles.buttonText, darkMode && styles.darkText]}>{name}</Text>
+
+      <View style={styles.row}>
+        {collections.map((collection) => (
+          <TouchableOpacity
+            key={collection.id}
+            style={[styles.collectionButton, darkMode && styles.darkButton]}
+            onPress={() => router.push(`/project?collectionId=${collection.id}`)}
+          >
+            <Image
+              source={{ uri: collection.mainVideo.thumbnail }}
+              style={styles.collectionBackground}
+              resizeMode="cover"
+            />
+            <View style={styles.collectionOverlay}>
+              <Text style={[styles.buttonText, darkMode && styles.darkText]}>{collection.title}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
       </View>
-    </TouchableOpacity>
-  ))}
+
+      <View style={styles.filterHeader}>
+        <Text style={[styles.header, darkMode && styles.darkText]}>All Videos</Text>
+        <View style={[styles.pickerWrapper, darkMode && styles.darkPickerWrapper]}>
+  <Picker
+    selectedValue={sortOption}
+    onValueChange={(itemValue) => setSortOption(itemValue)}
+    style={[styles.picker]}
+    dropdownIconColor={darkMode ? '#fff' : '#000'}
+  >
+    <Picker.Item label="Default" value="default" />
+    <Picker.Item label="Title (A-Z)" value="a-z" />
+    <Picker.Item label="Title (Z-A)" value="z-a" />
+    <Picker.Item label="Newest → Oldest" value="newest" />
+    <Picker.Item label="Oldest → Newest" value="oldest" />
+    <Picker.Item label="Liked Only ❤️" value="liked" />
+  </Picker>
 </View>
 
-      <Text style={[styles.header, darkMode && styles.darkText]}>All Videos</Text>
+
+      </View>
 
       <View style={styles.projectRow}>
-        {videos.map((video) => (
+        {sortedVideos.map((video) => (
           <TouchableOpacity
             key={video.id}
             onPress={() =>
@@ -54,13 +100,12 @@ export default function ContentScreen() {
               })
             }
             style={styles.projectCard}
-          ><View style={styles.imageWrapper}>
-            <Image source={{ uri: video.thumbnail }} style={styles.projectImage} resizeMode="cover"/>
+          >
+            <View style={styles.imageWrapper}>
+              <Image source={{ uri: video.thumbnail }} style={styles.projectImage} resizeMode="cover" />
             </View>
             <View style={styles.titleRow}>
-              <Text style={[styles.projectTitle, darkMode && styles.darkText]}>
-                {video.title}
-              </Text>
+              <Text style={[styles.projectTitle, darkMode && styles.darkText]}>{video.title}</Text>
               <TouchableOpacity onPress={() => toggleFavourite(video.id)}>
                 <AntDesign
                   name={favourites.includes(video.id) ? 'heart' : 'hearto'}
@@ -68,7 +113,6 @@ export default function ContentScreen() {
                   color={favourites.includes(video.id) ? 'red' : 'gray'}
                   style={{ marginLeft: 6, marginTop: 4.5 }}
                 />
-                
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -79,49 +123,31 @@ export default function ContentScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  darkContainer: {
-    backgroundColor: '#121212',
-  },
-  brand: {
-    fontSize: 24,
-    fontWeight: '800',
-    marginBottom: 12,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginVertical: 10,
-  },
-  darkText: {
-    color: '#fff',
-  },
+  container: { padding: 16, backgroundColor: '#fff' },
+  darkContainer: { backgroundColor: '#121212' },
+  brand: { fontSize: 24, fontWeight: '800', marginBottom: 12 },
+  header: { fontSize: 18, fontWeight: '600', marginVertical: 10 },
+  darkText: { color: '#fff' },
   projectRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 10,
   },
-  projectCard: {
-    width: '48%',
-    marginBottom: 16,
-  },
+  projectCard: { width: '48%', marginBottom: 16 },
   imageWrapper: {
     width: '100%',
-    aspectRatio: 1, // Square thumbnail
+    aspectRatio: 1,
     borderRadius: 10,
-    overflow: 'hidden', // This is important — clips the overflow
+    overflow: 'hidden',
     backgroundColor: '#ccc',
   },
   projectImage: {
-    width: '140%', // intentionally oversize width
-    height: '140%', // intentionally oversize height
+    width: '140%',
+    height: '140%',
     position: 'absolute',
-    top: '-20%', // push up
-    left: '-18%', // push left
+    top: '-20%',
+    left: '-18%',
   },
   titleRow: {
     flexDirection: 'row',
@@ -130,14 +156,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     alignSelf: 'stretch',
   },
-  projectTitle: {
-    fontWeight: '600',
-    fontSize: 14,
-    flexShrink: 1,
-  },
+  projectTitle: { fontWeight: '600', fontSize: 14, flexShrink: 1 },
   collectionButton: {
-    width: '48%',              
-    height: '20%',                
+    width: '48%',
+    height: 100,
     marginBottom: 10,
     borderRadius: 5,
     overflow: 'hidden',
@@ -145,33 +167,61 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
   collectionBackground: {
     ...StyleSheet.absoluteFillObject,
-    width: '200%',
-    height: '100%',
-    opacity: 0.5, // faded look
+    width: '150%',
+    height: '150%',
+    opacity: 0.3,
     position: 'absolute',
+    left: '-40',
   },
-  
   collectionOverlay: {
     zIndex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    height: '50%',
+    height: '100%',
   },
-  
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
-  },
-  
+  buttonText: { fontSize: 14, fontWeight: '600', color: '#000' },
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 2,
-  },  
+  },
+  filterHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  picker: {
+    width: 170,
+    height: 50,
+    fontSize: 14,
+    paddingVertical: 0,
+    marginTop: -4,
+  },
+  lightPicker: {
+    backgroundColor: '#eee',
+    color: '#000',
+  },
+  darkPicker: {
+    backgroundColor: '#333',
+    color: '#fff',
+  },
+  pickerWrapper: {
+    width: 170,
+    height: 40,
+    borderRadius: 6,
+    overflow: 'hidden',
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+  },
+  darkPickerWrapper: {
+    backgroundColor: '#333',
+  },
+  
+  
+  
 });
