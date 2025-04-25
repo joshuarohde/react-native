@@ -20,7 +20,7 @@ export const collections = [
     subVideos: [
         videos.find(v => v.id === 'poBqBgz53EE') || {},
         videos.find(v => v.id === 'kUhvES67V0k') || {},
-        videos.find(v => v.id === 'X7WIDvxggZQ') || {},
+        videos.find(v => v.id === 'X7WlDvxxgZ0') || {},
         videos.find(v => v.id === 'dUnZWnDITUc') || {},
     ],
   },

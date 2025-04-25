@@ -1,51 +1,69 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { Ionicons } from '@expo/vector-icons';
+
 import { FavouriteContext } from '../components/FavouriteContext';
 import { DarkModeContext } from '../components/DarkModeContext';
+import videos from '../components/VideoStorage';
 
 export default function VideoScreen() {
-  const { videoId, title, description } = useLocalSearchParams();
+  const { videoId } = useLocalSearchParams();
   const { favourites, toggleFavourite } = useContext(FavouriteContext);
   const { darkMode } = useContext(DarkModeContext);
 
+  const video = videos.find((v) => v.id === videoId);
+
+  if (!video) {
+    return (
+      <View style={[styles.container, darkMode && styles.darkContainer]}>
+        <Text style={[styles.title, darkMode && styles.darkText]}>
+          Video not found.
+        </Text>
+      </View>
+    );
+  }
+
+  const { title, description, credits, directorNote } = video;
   const isFavourited = favourites.includes(videoId);
-
-  const credits = [
-    'Directed by Joshua Rohde',
-    'Camera by Rene C.',
-    'Written by Josh R.',
-    'Special Thanks to Sage Funeral Home',
-  ];
-
-  const directorNote = `This piece represents more than just a school project — it's a love letter to storytelling. Thank you for watching and supporting my vision.`;
 
   return (
     <>
-<Stack.Screen
-  options={{
-    headerShown: true,
-    headerTitle: '',
-    headerStyle: {
-      backgroundColor: darkMode ? '#121212' : '#fff',
-    },
-    headerTintColor: darkMode ? '#fff' : '#000', 
-    headerRight: () => (
-      <Text style={{
-        fontWeight: 'bold',
-        fontSize: 16,
-        marginRight: 10,
-        color: darkMode ? '#ff4c4c' : '#000', // Red in dark mode, black in light
-      }}>
-        Rohde Creations +
-      </Text>
-    ),
-  }}
-/>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: '',
+          headerStyle: {
+            backgroundColor: darkMode ? '#121212' : '#fff',
+          },
+          headerTintColor: darkMode ? '#fff' : '#000',
+          headerRight: () => (
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 16,
+                marginRight: 10,
+                color: darkMode ? '#ff4c4c' : '#000',
+              }}
+            >
+              Rohde Creations +
+            </Text>
+          ),
+        }}
+      />
 
-      <ScrollView style={[styles.container, darkMode && styles.darkContainer]}>
+<ScrollView
+  style={[styles.container, darkMode && styles.darkContainer]}
+  contentContainerStyle={styles.scrollContent}
+>
+
         <View style={styles.titleRow}>
           <Text style={[styles.title, darkMode && styles.darkText]}>{title}</Text>
           <TouchableOpacity onPress={() => toggleFavourite(videoId)}>
@@ -70,22 +88,45 @@ export default function VideoScreen() {
           </View>
         </View>
 
-        <Text style={[styles.descriptionLabel, darkMode && styles.darkText]}>Description</Text>
-        <Text style={[styles.descriptionBox, darkMode && styles.darkBox, darkMode && styles.darkText]}>
+        <Text style={[styles.descriptionLabel, darkMode && styles.darkText]}>
+          Description
+        </Text>
+        <Text
+          style={[
+            styles.descriptionBox,
+            darkMode && styles.darkBox,
+            darkMode && styles.darkText,
+          ]}
+        >
           {description}
         </Text>
 
-        <View style={styles.section}>
-          <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>Credits</Text>
-          {credits.map((credit, index) => (
-            <Text key={index} style={[styles.sectionText, darkMode && styles.darkText]}>{credit}</Text>
-          ))}
-        </View>
+        {credits && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>
+              Credits
+            </Text>
+            {credits.map((credit, index) => (
+              <Text
+                key={index}
+                style={[styles.sectionText, darkMode && styles.darkText]}
+              >
+                {credit}
+              </Text>
+            ))}
+          </View>
+        )}
 
-        <View style={styles.section}>
-          <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>Director's Note</Text>
-          <Text style={[styles.sectionText, darkMode && styles.darkText]}>{directorNote}</Text>
-        </View>
+        {directorNote && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionHeader, darkMode && styles.darkText]}>
+              Director&apos;s Note
+            </Text>
+            <Text style={[styles.sectionText, darkMode && styles.darkText]}>
+              {directorNote}
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </>
   );
@@ -93,9 +134,10 @@ export default function VideoScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
     backgroundColor: '#fff',
   },
+  
   darkContainer: {
     backgroundColor: '#121212',
   },
@@ -149,4 +191,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 4,
   },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 40, // extra room to scroll below the last item
+  },
+  
 });

@@ -9,7 +9,9 @@ export const DarkModeProvider = ({ children }) => {
   useEffect(() => {
     const loadMode = async () => {
       const stored = await AsyncStorage.getItem('darkMode');
-      setDarkMode(stored === 'true');
+      if (stored === 'true' || stored === 'false') {
+        setDarkMode(stored === 'true');
+      }
     };
     loadMode();
   }, []);

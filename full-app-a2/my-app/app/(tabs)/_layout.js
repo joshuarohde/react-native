@@ -19,7 +19,6 @@ function TabsWithDarkMode() {
           backgroundColor: darkMode ? '#121212' : '#ffffff',
           borderTopColor: darkMode ? '#222' : '#ccc',
         },
-        // Unselect tab if viewing the video screen
         tabBarActiveTintColor: isInVideo && route.name === '2-content' ? 'transparent' :
                               darkMode ? '#ffffff' : '#000000',
         tabBarInactiveTintColor: '#888888',
@@ -27,22 +26,16 @@ function TabsWithDarkMode() {
           let iconName;
           if (route.name === '1-home') iconName = 'home';
           else if (route.name === '2-content') iconName = 'albums';
-          else if (route.name === '3-settings') iconName = 'settings';
+          else if (route.name === '3-search') iconName = 'search';
+          else if (route.name === '4-settings') iconName = 'settings';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tabs.Screen name="1-home" options={{ title: 'Home' }} />
-
-      <Tabs.Screen
-        name="2-content"
-        options={{
-          title: 'Content',
-          href: '/(tabs)/2-content', // always reset to index when clicked
-        }}
-      />
-
-      <Tabs.Screen name="3-settings" options={{ title: 'Settings' }} />
+      <Tabs.Screen name="2-content" options={{ title: 'Content', href: '/(tabs)/2-content' }} />
+      <Tabs.Screen name="3-search" options={{ title: 'Search' }} />
+      <Tabs.Screen name="4-settings" options={{ title: 'Settings' }} />
     </Tabs>
   );
 }

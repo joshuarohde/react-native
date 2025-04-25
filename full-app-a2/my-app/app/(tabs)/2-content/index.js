@@ -67,12 +67,12 @@ export default function ContentScreen() {
       <View style={styles.filterHeader}>
         <Text style={[styles.header, darkMode && styles.darkText]}>All Videos</Text>
         <View style={[styles.pickerWrapper, darkMode && styles.darkPickerWrapper]}>
-  <Picker
-    selectedValue={sortOption}
-    onValueChange={(itemValue) => setSortOption(itemValue)}
-    style={[styles.picker]}
-    dropdownIconColor={darkMode ? '#fff' : '#000'}
-  >
+        <Picker
+  selectedValue={sortOption}
+  onValueChange={(itemValue) => setSortOption(itemValue)}
+  dropdownIconColor={darkMode ? '#fff' : '#000'}
+  style={[styles.picker, darkMode ? styles.darkPicker : styles.lightPicker]} 
+>
     <Picker.Item label="Default" value="default" />
     <Picker.Item label="Title (A-Z)" value="a-z" />
     <Picker.Item label="Title (Z-A)" value="z-a" />
@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     color: '#fff',
   },
+  
   pickerWrapper: {
     width: 170,
     height: 40,

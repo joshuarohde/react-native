@@ -2,6 +2,11 @@ import { Stack } from 'expo-router';
 
 export default function ModalLayout() {
   return (
-    <Stack screenOptions={{ presentation: 'modal' }} />
+    <Stack
+      screenOptions={{
+        presentation: 'modal',
+        headerShown: false, // this is all you need
+      }}
+    />
   );
 }

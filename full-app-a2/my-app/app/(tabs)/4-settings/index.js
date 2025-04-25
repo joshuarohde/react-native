@@ -1,21 +1,27 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TextInput, Switch, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Switch,
+} from 'react-native';
 import { DarkModeContext } from '../../../components/DarkModeContext';
 import { UserNameContext } from '../../../components/UserNameContext';
 
 function SettingsScreen() {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
-  const { userName, updateUserName } = useContext(UserNameContext); // ✅ use updateUserName instead of setUserName
+  const { userName, updateUserName } = useContext(UserNameContext);
 
   return (
     <ScrollView
       style={[darkMode && styles.darkContainer]}
       contentContainerStyle={[styles.container, darkMode && styles.darkContainer]}
     >
- <Text style={[styles.brand, { color: darkMode ? '#ff4c4c' : '#000' }]}>
-  Rohde Creations +
-</Text>
+      <Text style={[styles.brand, { color: darkMode ? '#ff4c4c' : '#000' }]}>
+        Rohde Creations +
+      </Text>
 
       <Text style={[styles.header, darkMode && styles.darkText]}>Settings</Text>
 
@@ -25,14 +31,14 @@ function SettingsScreen() {
         placeholder="Your name"
         placeholderTextColor={darkMode ? '#ccc' : '#888'}
         value={userName}
-        onChangeText={text => updateUserName(text)} // ✅ Save and update context in real-time
+        onChangeText={updateUserName}
       />
 
       <Text style={[styles.label, darkMode && styles.darkText]}>Dark Mode</Text>
       <View style={{ alignItems: 'flex-start' }}>
         <Switch
           value={darkMode}
-          onValueChange={toggleDarkMode}
+          onValueChange={(value) => toggleDarkMode(value)}
           trackColor={{ false: '#767577', true: '#81b0ff' }}
           thumbColor={darkMode ? '#f5dd4b' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
@@ -40,7 +46,15 @@ function SettingsScreen() {
       </View>
 
       <Text style={[styles.thankYou, darkMode && styles.darkSubtle]}>
-        Insert personal thank-you from Joshua Rohde here for choosing to use the app.
+        Hey there,{"\n\n"}
+        I just wanted to take a moment to personally thank you for choosing to use this app. 
+        It means a lot to me that you're here, exploring the work I've poured my heart into. 
+        Every project, video, and design in this space represents countless hours of creativity, 
+        learning, and passion. So whether you're just browsing or diving deep—thank you. Seriously.{"\n\n"}
+        Your support keeps me inspired to keep creating, keep experimenting, and keep pushing the 
+        boundaries of what's possible. I hope you find something here that sticks with you.{"\n\n"}
+        With appreciation,{"\n"}
+        Joshua Rohde
       </Text>
     </ScrollView>
   );
